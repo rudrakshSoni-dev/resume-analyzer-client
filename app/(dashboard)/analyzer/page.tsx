@@ -42,14 +42,11 @@ export default function AnalyzerPage() {
     try {
       const { data } = await api.post('/resume/upload', formData);
 
-      console.log("UPLOAD RESPONSE:", data);
-
       if (!data?.id) {
         throw new Error("No ID returned from backend");
       }
 
       setResumeId(data.id);
-
       toast.success('Resume uploaded successfully');
     } catch (err: any) {
       console.error("UPLOAD ERROR:", err);
@@ -106,10 +103,10 @@ export default function AnalyzerPage() {
     if (uploading) return;
 
     try {
-      const res = await fetch('/mock-resume.pdf');
+      const res = await fetch('/resume.pdf');
       const blob = await res.blob();
 
-      const mockFile = new File([blob], 'mock-resume.pdf', {
+      const mockFile = new File([blob], 'resume.pdf', {
         type: 'application/pdf',
       });
 
@@ -130,9 +127,17 @@ export default function AnalyzerPage() {
     setAnalyzing(true);
 
     try {
-      const { data } = await api.post(`/resume/${resumeId}/analyze`, {
-        jobDescription,
-      });
+      const payload: any = {};
+
+      // ✅ Only send JD if valid
+      if (jobDescription && jobDescription.trim().length >= 10) {
+        payload.jobDescription = jobDescription.trim();
+      }
+
+      const { data } = await api.post(
+        `/resume/${resumeId}/analyze`,
+        payload
+      );
 
       if (!data?.analysis) {
         throw new Error('Invalid analysis response');
@@ -148,9 +153,15 @@ export default function AnalyzerPage() {
       );
 
       toast.success('Analysis complete');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error('Analysis failed');
+
+      const msg =
+        err?.response?.data?.errors?.[0]?.msg ||
+        err?.response?.data?.message ||
+        'Analysis failed';
+
+      toast.error(msg);
     } finally {
       setAnalyzing(false);
     }
@@ -167,6 +178,9 @@ export default function AnalyzerPage() {
         { name: 'Impact metrics', score: results.impactScore },
       ]
     : [];
+
+  const isJDValid =
+    !jobDescription || jobDescription.trim().length >= 10;
 
   return (
     <motion.div
@@ -249,7 +263,7 @@ export default function AnalyzerPage() {
           className="flex justify-between cursor-pointer"
           onClick={() => setShowJD(!showJD)}
         >
-          <span>Add Job Description</span>
+          <span>Add Job Description (Optional)</span>
           {showJD ? <ChevronUp /> : <ChevronDown />}
         </div>
 
@@ -257,6 +271,7 @@ export default function AnalyzerPage() {
           <textarea
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
+            placeholder="Minimum 10 characters..."
             className="w-full mt-4 p-3 border rounded-md h-32"
           />
         )}
@@ -265,7 +280,7 @@ export default function AnalyzerPage() {
       {/* ANALYZE */}
       <Button
         onClick={handleAnalyze}
-        disabled={!resumeId || uploading || analyzing}
+        disabled={!resumeId || uploading || analyzing || !isJDValid}
         className="w-full bg-black text-white py-6"
       >
         {uploading
