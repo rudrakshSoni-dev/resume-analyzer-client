@@ -22,13 +22,13 @@ export default function DocsPage() {
         <h2 className="text-xl font-semibold">Repositories</h2>
         <p>
           Frontend:{" "}
-          <a href="https://github.com/your-username/resume-analyzer-frontend" className="underline">
+          <a href="https://github.com/your-username/resume-analyzer-client" className="underline">
             GitHub Repo
           </a>
         </p>
         <p>
           Backend:{" "}
-          <a href="https://github.com/your-username/resume-analyzer-backend" className="underline">
+          <a href="https://github.com/your-username/resume-analyzer-server" className="underline">
             GitHub Repo
           </a>
         </p>
