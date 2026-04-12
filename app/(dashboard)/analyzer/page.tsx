@@ -40,21 +40,19 @@ export default function AnalyzerPage() {
     formData.append('resume', uploadedFile);
 
     try {
-      const { data } = await api.post('/resume/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const { data } = await api.post('/resume/upload', formData);
 
-      if (!data?.resumeId) {
-        throw new Error('No resumeId returned from backend');
+      console.log("UPLOAD RESPONSE:", data);
+
+      if (!data?.id) {
+        throw new Error("No ID returned from backend");
       }
 
-      setResumeId(data.resumeId);
+      setResumeId(data.id);
 
       toast.success('Resume uploaded successfully');
     } catch (err: any) {
-      console.error('UPLOAD ERROR:', err);
+      console.error("UPLOAD ERROR:", err);
 
       setFile(null);
       setResumeId('');
@@ -135,7 +133,6 @@ export default function AnalyzerPage() {
       const { data } = await api.post(`/resume/${resumeId}/analyze`, {
         jobDescription,
       });
-      
 
       if (!data?.analysis) {
         throw new Error('Invalid analysis response');
@@ -177,7 +174,7 @@ export default function AnalyzerPage() {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-3xl mx-auto space-y-8"
     >
-      {/* ================= DROPZONE ================= */}
+      {/* DROPZONE */}
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -203,9 +200,7 @@ export default function AnalyzerPage() {
           <>
             <CheckCircle2 className="w-12 h-12 text-green-500 mb-3" />
             <p className="font-medium">{file.name}</p>
-            <p className="text-sm text-green-600">
-              Ready to analyze
-            </p>
+            <p className="text-sm text-green-600">Ready to analyze</p>
 
             <Button
               variant="outline"
@@ -248,7 +243,7 @@ export default function AnalyzerPage() {
         />
       </div>
 
-      {/* ================= JD ================= */}
+      {/* JD */}
       <div className="bg-white p-4 border rounded-xl">
         <div
           className="flex justify-between cursor-pointer"
@@ -267,7 +262,7 @@ export default function AnalyzerPage() {
         )}
       </div>
 
-      {/* ================= ANALYZE ================= */}
+      {/* ANALYZE */}
       <Button
         onClick={handleAnalyze}
         disabled={!resumeId || uploading || analyzing}
@@ -280,14 +275,14 @@ export default function AnalyzerPage() {
           : 'Analyze Resume'}
       </Button>
 
-      {/* ================= LOADING ================= */}
+      {/* LOADING */}
       {analyzing && (
         <div className="flex justify-center">
           <Skeleton className="w-48 h-48 rounded-full" />
         </div>
       )}
 
-      {/* ================= RESULTS ================= */}
+      {/* RESULTS */}
       {results && !analyzing && (
         <div className="space-y-6">
           <div className="bg-white p-6 border rounded-xl">
