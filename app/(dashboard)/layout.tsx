@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, FileSearch, Briefcase, Menu, LogOut, Users, Link } from 'lucide-react';
+import { Home, FileSearch, Briefcase, Menu, LogOut, Users, Link , File} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getStoredUsers, removeActiveUser, switchToUser } from '../lib/cookies';
 import { StoredUser } from '../types';
@@ -21,6 +21,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = [
     { icon: FileSearch, label: 'Analyze Resume', path: '/analyzer' },
     { icon: Briefcase, label: 'See Jobs', path: '/jobs' },
+    { icon: File , label: 'Docs', path:'/docs'}
   ];
 
   const handleLogout = () => {
